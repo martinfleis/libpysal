@@ -195,7 +195,6 @@ class W(object):
         -------
         None
         """
-<<<<<<< HEAD
         if format is None:
             format = os.path.splitext(path)[1]
             format = format.replace(".", "")
@@ -208,11 +207,6 @@ class W(object):
             f = popen(dataPath=path, mode="w", dataFormat=format)
             f.write(self)
             f.close()
-=======
-        f = popen(dataPath=path, mode="w", dataFormat=format)
-        f.write(self)
-        f.close()
->>>>>>> upstream/master
 
     @classmethod
     def from_file(cls, path="", format=None):
@@ -230,7 +224,6 @@ class W(object):
         -------
         W object
         """
-<<<<<<< HEAD
         if format is None:
             format = os.path.splitext(path)[1]
             format = format.replace(".", "")
@@ -243,11 +236,6 @@ class W(object):
             f = popen(dataPath=path, mode="r", dataFormat=format)
             w = f.read()
             f.close()
-=======
-        f = popen(dataPath=path, mode="r", dataFormat=format)
-        w = f.read()
-        f.close()
->>>>>>> upstream/master
         return w
 
     @classmethod
