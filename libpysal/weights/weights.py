@@ -4,6 +4,7 @@ Weights.
 __author__ = "Sergio J. Rey <srey@asu.edu>"
 
 import copy
+import os
 from os.path import basename as BASENAME
 import math
 import warnings
@@ -175,7 +176,7 @@ class W(object):
         """Reset properties."""
         self._cache = {}
 
-    def to_file(self, path='', format=None):
+    def to_file(self, path="", format=None):
         """
         Write a weights to a file. The format is guessed automatically 
         from the path, but can be overridden with the format argument. 
@@ -194,13 +195,21 @@ class W(object):
         -------
         None
         """
-        f = popen(dataPath=path, mode='w', dataFormat=format)
-        f.write(self)
-        f.close()
-        
+        if format is None:
+            format = os.path.splitext(path)[1]
+            format = format.replace(".", "")
+            format = format.lower()
+        if format == "npz":
+            scipy.sparse.save_npz(path, self.sparse)
+        elif format == "mtx":
+            scipy.io.mmwrite(path, self.sparse)
+        else:
+            f = popen(dataPath=path, mode="w", dataFormat=format)
+            f.write(self)
+            f.close()
 
     @classmethod
-    def from_file(cls, path='', format=None):
+    def from_file(cls, path="", format=None):
         """
         Read a weights file into a W object. 
 
@@ -215,9 +224,18 @@ class W(object):
         -------
         W object
         """
-        f = popen(dataPath=path, mode='r', dataFormat=format)
-        w = f.read()
-        f.close()
+        if format is None:
+            format = os.path.splitext(path)[1]
+            format = format.replace(".", "")
+            format = format.lower()
+        if format == "npz":
+            w = WSP(scipy.sparse.load_npz(path)).to_W()
+        elif format == "mtx":
+            w = WSP(scipy.io.mmread(path)).to_W()
+        else:
+            f = popen(dataPath=path, mode="r", dataFormat=format)
+            w = f.read()
+            f.close()
         return w
 
     @classmethod
@@ -877,9 +895,9 @@ class W(object):
             for j, neigh_list in list(self.neighbors.items()):
                 self.__neighbors_0[j] = [id2i[neigh] for neigh in neigh_list]
             self._cache["neighbors_0"] = self.__neighbors_0
-        
+
         neighbor_list = self.__neighbors_0
-        
+
         return neighbor_list
 
     def get_transform(self):
@@ -1369,13 +1387,12 @@ class WSP(object):
         self.id_order = id_order
         # temp addition of index attribute
         import pandas as pd  # will be removed after refactoring is done
+
         if index is not None:
             if not isinstance(index, (pd.Index, pd.MultiIndex, pd.RangeIndex)):
                 raise TypeError("index must be an instance of pandas.Index dtype")
             if len(index) != self.n:
-                raise ValueError(
-                    "Number of values in index must match shape of sparse"
-                )
+                raise ValueError("Number of values in index must match shape of sparse")
         else:
             index = pd.RangeIndex(self.n)
         self.index = index
