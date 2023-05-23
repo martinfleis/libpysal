@@ -12,3 +12,4 @@ jobs:
         with:
             package_name: "libpysal"
             excluded: "fine"
+            installation_command: "pip install --use-pep517 ."
