@@ -13,7 +13,7 @@ jobs:
         with:
             package_name: "libpysal"
             exclude: "fine"
-            include: "momepy,cenpy,esda,splot"
-            additional: "mapclassify"
-            install: "inequality"
-            fail_on_failure: "false"
+            # include: "momepy,cenpy,esda,splot"
+            # additional: "mapclassify"
+            # install: "inequality"
+            # fail_on_failure: "false"
