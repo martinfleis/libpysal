@@ -13,4 +13,4 @@ jobs:
         with:
             package_name: "libpysal"
             exclude: "fine"
-            include: "momepy,cenpy,esda"
+            include: "momepy,cenpy,esda,splot"
