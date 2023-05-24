@@ -3,7 +3,7 @@ on:
   pull_request:
   workflow_dispatch:
 jobs:
-  cron:
+  reverse_dependencies:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -12,4 +12,3 @@ jobs:
         with:
             package_name: "libpysal"
             excluded: "fine"
-            installation_command: "pip install --use-pep517 ."
