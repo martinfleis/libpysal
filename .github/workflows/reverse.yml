@@ -12,8 +12,8 @@ jobs:
       - uses: martinfleis/reverse-dependency-testing@main
         with:
             package_name: "libpysal"
-            exclude: "fine"
-            include: "momepy,cenpy,esda,splot"
-            additional: "mapclassify"
+            ignore: "fine"
+            whitelist: "momepy,cenpy,esda,splot"
+            include: "mapclassify"
             install: "inequality"
             fail_on_failure: "false"
