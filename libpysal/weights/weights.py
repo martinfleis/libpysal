@@ -827,7 +827,9 @@ class W(object):
 
     @property
     def asymmetries(self):
-        """List of id pairs with asymmetric weights."""
+        """List of id pairs with asymmetric weights
+        sorted in ascending *index location* order.
+        """
         if "asymmetries" not in self._cache:
             self._asymmetries = self.asymmetry()
             self._cache["asymmetries"] = self._asymmetries
@@ -1228,14 +1230,15 @@ class W(object):
 
         Parameters
         ----------
+
         intrinsic : bool
-            Default is ``True``. Intrinsic symmetry is defined as
+            Default is ``True``. Intrinsic symmetry is defined as:
 
             .. math::
 
                 w_{i,j} == w_{j,i}
 
-            If ``intrinsic`` is ``False`` symmetry is defined as
+            If ``intrinsic`` is ``False`` symmetry is defined as:
 
             .. math::
 
@@ -1245,9 +1248,11 @@ class W(object):
 
         Returns
         -------
+
         asymmetries : list
-            Empty if no asymmetries are found if asymmetries, then a
-            ``list`` of ``(i,j)`` tuples is returned.
+            Empty if no asymmetries are found. If there are asymmetries,
+            then a ``list`` of ``(i,j)`` tuples is returned sorted in
+            ascending *index location* order.
 
         Examples
         --------
@@ -1267,6 +1272,7 @@ class W(object):
         >>> w=W(neighbors,weights)
         >>> w.asymmetry()
         [(0, 1), (1, 0)]
+
         """
 
         if intrinsic:
@@ -1278,11 +1284,16 @@ class W(object):
             self.transform = transform
 
         ids = np.nonzero(wd)
+
         if len(ids[0]) == 0:
             return []
         else:
             ijs = list(zip(ids[0], ids[1]))
             ijs.sort()
+
+            i2id = {v: k for k, v in self.id2i.items()}
+            ijs = [(i2id[i], i2id[j]) for i, j in ijs]
+
             return ijs
 
     def symmetrize(self, inplace=False):
@@ -1473,14 +1484,16 @@ class W(object):
         else:
             edge_kws = dict(color=color)
 
-        for idx, neighbors in self:
+        for idx, neighbors in self.neighbors.items():
             if idx in self.islands:
                 continue
             if indexed_on is not None:
                 neighbors = gdf[gdf[indexed_on].isin(neighbors)].index.tolist()
                 idx = gdf[gdf[indexed_on] == idx].index.tolist()[0]
-            centroids = gdf.loc[neighbors].centroid.apply(lambda p: (p.x, p.y))
-            centroids = np.vstack(centroids.values)
+            else:
+                neighbors = list(neighbors)
+            centroids = gdf.loc[neighbors].centroid
+            centroids = np.stack([centroids.x, centroids.y], axis=1)
             focal = np.hstack(gdf.loc[idx].geometry.centroid.xy)
             seen = set()
             for nidx, neighbor in zip(neighbors, centroids):
@@ -1489,11 +1502,8 @@ class W(object):
                 ax.plot(*list(zip(focal, neighbor)), marker=None, **edge_kws)
                 seen.update((idx, nidx))
                 seen.update((nidx, idx))
-        ax.scatter(
-            gdf.centroid.apply(lambda p: p.x),
-            gdf.centroid.apply(lambda p: p.y),
-            **node_kws,
-        )
+        centroids = gdf.centroid
+        ax.scatter(centroids.x, centroids.y, **node_kws)
         return f, ax
 
 

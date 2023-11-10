@@ -3,23 +3,29 @@ channels:
   - conda-forge
 dependencies:
   - python=3.11
-  - platformdirs
   - beautifulsoup4
+  - geopandas
   - jinja2
+  - packaging
   - pandas
+  - platformdirs
+  - requests
   - scipy
-  - xarray
+  - shapely
   # testing
   - codecov
   - matplotlib
   - pytest
   - pytest-cov
+  - pytest-mpl
   - pytest-xdist
-  # optional
-  - geopandas>=0.12.0
+    # optional
+  - geodatasets
   - joblib
   - networkx
-  - packaging
-  - shapely>=2.0b1
+  - numba
+  - pyarrow
+  - scikit-learn
+  - sqlalchemy
   - xarray
   - zstd
